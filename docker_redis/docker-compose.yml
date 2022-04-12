@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:6.2.5
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  
+  redis-exporter-1:
+    image: oliver006/redis_exporter:v1.27.1
+    restart: always
+    command:
+      - -include-system-metrics=true
+    links:
+      - redis
+    depends_on:
+      - redis
+
+networks:
+  default:
+    external: true
+    name: prometheus-metrics

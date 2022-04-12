@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  db-maria-1:
+    image: mariadb:10.6.4
+    restart: always
+    volumes:
+      - ./db-mariadb-1:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: Rahasia88oke
+
+  maria-exporter-1:
+    image: prom/mysqld-exporter:v0.13.0
+    command:
+        - --collect.info_schema.tablestats
+        - --collect.info_schema.query_response_time
+    environment:
+        - DATA_SOURCE_NAME=root:Rahasia88oke@(db-maria-1:3306)/
+    links:
+        - db-maria-1
+    depends_on:
+        - db-maria-1
+    cap_add:
+        - SYS_NICE
+    security_opt:
+        - seccomp:unconfined 
+
+networks:
+  default:
+    external: true
+    name: prometheus-metrics 
